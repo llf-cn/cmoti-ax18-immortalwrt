@@ -23,4 +23,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Cache Clean
-        run: gh cache delete --all
+        run: |
+          # 使用 GitHub API 删除所有 Actions 缓存（兼容旧版 gh CLI）
+          gh api --paginate /repos/${{ github.repository }}/actions/caches --jq '.actions_caches[] | .id' | while read id; do
+            echo "删除缓存: $id"
+            gh api -X DELETE "/repos/${{ github.repository }}/actions/caches/$id" --silent
+          done
+          echo "缓存清理完成"
