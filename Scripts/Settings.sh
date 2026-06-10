@@ -41,6 +41,9 @@ if [ -n "${WRT_PACKAGE:-}" ]; then
 	echo -e "$WRT_PACKAGE" >> ./.config
 fi
 
+# 开启开发者选项（dae BTF 内核支持需要）
+echo "CONFIG_DEVEL=y" >> ./.config
+
 #高通平台调整
 DTS_PATH="./target/linux/qualcommax/dts/"
 if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then

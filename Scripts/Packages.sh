@@ -62,6 +62,9 @@ rm -f ./luci-app-tailscale/root/etc/init.d/tailscale
 UPDATE_PACKAGE "ddns-go" "sirpdboy/luci-app-ddns-go" "main"
 UPDATE_PACKAGE "diskman" "lisaac/luci-app-diskman" "master"
 UPDATE_PACKAGE "easytier" "EasyTier/luci-app-easytier" "main"
+
+# dae（需要内核 BTF 支持，已配置在 IPQ60XX-AX18-LITE.txt + Settings.sh）
+UPDATE_PACKAGE "daed" "QiuSimons/luci-app-daed" "main"
 UPDATE_PACKAGE "mosdns" "sbwml/luci-app-mosdns" "v5" "" "v2dat"
 UPDATE_PACKAGE "openlist2" "sbwml/luci-app-openlist2" "main"
 UPDATE_PACKAGE "partexp" "sirpdboy/luci-app-partexp" "main"
