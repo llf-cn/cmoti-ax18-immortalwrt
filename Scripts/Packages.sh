@@ -68,7 +68,7 @@ UPDATE_PACKAGE "easytier" "EasyTier/luci-app-easytier" "main"
 rm -rf ./daed ./luci-app-daed
 PKG_NAME="daed"
 PKG_REPO="QiuSimons/luci-app-daed"
-PKG_BRANCH="master"
+PKG_BRANCH="kix"
 REPO_NAME="${PKG_REPO#*/}"
 git clone --depth=1 --single-branch --branch "$PKG_BRANCH" "https://github.com/$PKG_REPO.git" "/tmp/$REPO_NAME" 2>/dev/null || {
 	echo "WARNING: Failed to clone $PKG_REPO, skipping."
