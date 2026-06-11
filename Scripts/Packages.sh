@@ -64,7 +64,8 @@ UPDATE_PACKAGE "diskman" "lisaac/luci-app-diskman" "master"
 UPDATE_PACKAGE "easytier" "EasyTier/luci-app-easytier" "main"
 
 # dae（需要内核 BTF 支持，已配置在 IPQ60XX-AX18-LITE.txt + Settings.sh）
-UPDATE_PACKAGE "daed" "QiuSimons/luci-app-daed" "main"
+# 注意：仓库分支是 master，不是 main
+UPDATE_PACKAGE "daed" "QiuSimons/luci-app-daed" "master"
 UPDATE_PACKAGE "mosdns" "sbwml/luci-app-mosdns" "v5" "" "v2dat"
 UPDATE_PACKAGE "openlist2" "sbwml/luci-app-openlist2" "main"
 UPDATE_PACKAGE "partexp" "sirpdboy/luci-app-partexp" "main"
