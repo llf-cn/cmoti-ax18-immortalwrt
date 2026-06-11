@@ -28,8 +28,8 @@ CONFIG_PACKAGE_MAC80211_NSS_SUPPORT=n
 CONFIG_PACKAGE_MAC80211_MESH=n
 CONFIG_PACKAGE_ATH_DFS=n
 
-# OpenClash（暂不编译，有需要取消注释即可）
-# CONFIG_PACKAGE_luci-app-openclash=y
+# OpenClash
+CONFIG_PACKAGE_luci-app-openclash=y
 
 # HomeProxy
 CONFIG_PACKAGE_luci-app-homeproxy=n
@@ -57,23 +57,3 @@ CONFIG_PACKAGE_libcurl=y
 # 添加 SFTP 子系统
 CONFIG_PACKAGE_openssh-sftp-server=y
 
-# ========== dae 依赖：内核 BTF 支持 ==========
-CONFIG_KERNEL_DEBUG_INFO=y
-CONFIG_KERNEL_DEBUG_INFO_REDUCED=n
-CONFIG_KERNEL_DEBUG_INFO_BTF=y
-CONFIG_KERNEL_CGROUPS=y
-CONFIG_KERNEL_CGROUP_BPF=y
-CONFIG_KERNEL_BPF_EVENTS=y
-CONFIG_BPF_TOOLCHAIN_HOST=y
-CONFIG_KERNEL_XDP_SOCKETS=y
-CONFIG_PACKAGE_kmod-xdp-sockets-diag=y
-
-# dae 依赖：eBPF 内核模块 + v2ray 规则数据
-CONFIG_PACKAGE_kmod-sched-bpf=y
-CONFIG_PACKAGE_kmod-veth=y
-CONFIG_PACKAGE_v2ray-geoip=y
-CONFIG_PACKAGE_v2ray-geosite=y
-
-# dae 包
-CONFIG_PACKAGE_daed=y
-CONFIG_PACKAGE_luci-app-daed=y

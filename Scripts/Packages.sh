@@ -63,22 +63,6 @@ UPDATE_PACKAGE "ddns-go" "sirpdboy/luci-app-ddns-go" "main"
 UPDATE_PACKAGE "diskman" "lisaac/luci-app-diskman" "master"
 UPDATE_PACKAGE "easytier" "EasyTier/luci-app-easytier" "main"
 
-# daed（QiuSimons/luci-app-daed 仓库的包在子目录中，需要单独提取）
-# 分支是 master，不是 main
-rm -rf ./daed ./luci-app-daed
-PKG_NAME="daed"
-PKG_REPO="QiuSimons/luci-app-daed"
-PKG_BRANCH="kix"
-REPO_NAME="${PKG_REPO#*/}"
-git clone --depth=1 --single-branch --branch "$PKG_BRANCH" "https://github.com/$PKG_REPO.git" "/tmp/$REPO_NAME" 2>/dev/null || {
-	echo "WARNING: Failed to clone $PKG_REPO, skipping."
-}
-if [ -d "/tmp/$REPO_NAME" ]; then
-	cp -rf /tmp/$REPO_NAME/daed ./daed
-	cp -rf /tmp/$REPO_NAME/luci-app-daed ./luci-app-daed
-	rm -rf /tmp/$REPO_NAME
-	echo "daed packages extracted successfully!"
-fi
 UPDATE_PACKAGE "mosdns" "sbwml/luci-app-mosdns" "v5" "" "v2dat"
 UPDATE_PACKAGE "openlist2" "sbwml/luci-app-openlist2" "main"
 UPDATE_PACKAGE "partexp" "sirpdboy/luci-app-partexp" "main"
