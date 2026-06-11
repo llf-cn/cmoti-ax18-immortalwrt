@@ -63,9 +63,8 @@ UPDATE_PACKAGE "ddns-go" "sirpdboy/luci-app-ddns-go" "main"
 UPDATE_PACKAGE "diskman" "lisaac/luci-app-diskman" "master"
 UPDATE_PACKAGE "easytier" "EasyTier/luci-app-easytier" "main"
 
-# dae（需要内核 BTF 支持，已配置在 IPQ60XX-AX18-LITE.txt + Settings.sh）
-# 注意：仓库分支是 master，不是 main
-# daed（仓库含子目录，需要单独提取）
+# daed（QiuSimons/luci-app-daed 仓库的包在子目录中，需要单独提取）
+# 分支是 master，不是 main
 rm -rf ./daed ./luci-app-daed
 PKG_NAME="daed"
 PKG_REPO="QiuSimons/luci-app-daed"
