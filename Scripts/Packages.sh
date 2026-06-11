@@ -65,7 +65,21 @@ UPDATE_PACKAGE "easytier" "EasyTier/luci-app-easytier" "main"
 
 # dae（需要内核 BTF 支持，已配置在 IPQ60XX-AX18-LITE.txt + Settings.sh）
 # 注意：仓库分支是 master，不是 main
-UPDATE_PACKAGE "daed" "QiuSimons/luci-app-daed" "master"
+# daed（仓库含子目录，需要单独提取）
+rm -rf ./daed ./luci-app-daed
+PKG_NAME="daed"
+PKG_REPO="QiuSimons/luci-app-daed"
+PKG_BRANCH="master"
+REPO_NAME="${PKG_REPO#*/}"
+git clone --depth=1 --single-branch --branch "$PKG_BRANCH" "https://github.com/$PKG_REPO.git" "/tmp/$REPO_NAME" 2>/dev/null || {
+	echo "WARNING: Failed to clone $PKG_REPO, skipping."
+}
+if [ -d "/tmp/$REPO_NAME" ]; then
+	cp -rf /tmp/$REPO_NAME/daed ./daed
+	cp -rf /tmp/$REPO_NAME/luci-app-daed ./luci-app-daed
+	rm -rf /tmp/$REPO_NAME
+	echo "daed packages extracted successfully!"
+fi
 UPDATE_PACKAGE "mosdns" "sbwml/luci-app-mosdns" "v5" "" "v2dat"
 UPDATE_PACKAGE "openlist2" "sbwml/luci-app-openlist2" "main"
 UPDATE_PACKAGE "partexp" "sirpdboy/luci-app-partexp" "main"
