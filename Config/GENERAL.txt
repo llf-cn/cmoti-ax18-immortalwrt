@@ -1,5 +1,7 @@
 # 增加插件
 CONFIG_PACKAGE_luci-app-autoreboot=y
+# 移除 video feed 的 distfeeds 源（上游已不发布该源包索引，apk update 会 404）
+CONFIG_FEED_video=n
 # 删除插件
 CONFIG_PACKAGE_luci-app-wol=n
 CONFIG_PACKAGE_luci-app-zram=n
