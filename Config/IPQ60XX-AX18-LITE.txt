@@ -47,10 +47,16 @@ CONFIG_PACKAGE_luci-app-nikki=n
 # 设置主题为 Bootstrap
 CONFIG_PACKAGE_luci-theme-bootstrap=y
 
-# 开启 Tailscale
-CONFIG_PACKAGE_luci-app-tailscale=y
-CONFIG_PACKAGE_tailscale=y
-CONFIG_PACKAGE_luci-i18n-tailscale-zh-cn=y
+# 关闭 Tailscale（tailscaled 是 26MB Go 静态二进制，压缩后仍占 rom/overlay 各约 10MB）
+CONFIG_PACKAGE_luci-app-tailscale=n
+CONFIG_PACKAGE_tailscale=n
+CONFIG_PACKAGE_luci-i18n-tailscale-zh-cn=n
+
+# 开启 WireGuard（内核态实现，整套不到 1MB；本机有公网 IPv6，可直连回家）
+CONFIG_PACKAGE_kmod-wireguard=y
+CONFIG_PACKAGE_wireguard-tools=y
+CONFIG_PACKAGE_luci-proto-wireguard=y
+CONFIG_PACKAGE_rpcd-mod-wireguard=y
 
 # 有线 NSS 完整加速（含 PPPoE 拨号加速）
 CONFIG_PACKAGE_kmod-qca-nss-ecm=y
