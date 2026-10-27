@@ -25,6 +25,15 @@ CONFIG_TARGET_DEVICE_qualcommax_ipq60xx_DEVICE_cmiot_ax18=y
 # CONFIG_PACKAGE_iw is not set
 # CONFIG_PACKAGE_wireless-regdb is not set
 
+# hostapd 的 11ac/11ax 特性开关。原本由 kmod-mac80211 的依赖隐式打开
+# （Config.in 里 default y if PACKAGE_kmod-mac80211），移除 mac80211 后自动变 n，
+# 但 wpad-openssl 仍被 target 的 DEFAULT_PACKAGES 编成 full 变体，而 full 变体的
+# hostapd.c 对 he_mu_edca 的引用没有条件编译保护，于是编译失败：
+#   src/ap/hostapd.c:5165: error: 'struct hostapd_config' has no member named 'he_mu_edca'
+# 这里显式打开，恢复到移除 mac80211 之前的已知可用状态（wpad 只编不装，不占镜像）。
+CONFIG_DRIVER_11AC_SUPPORT=y
+CONFIG_DRIVER_11AX_SUPPORT=y
+
 # 精简文件系统与 USB 存储（不挂 U 盘、不接 4G 模块）
 # automount 是整条链的源头，它的 DEPENDS 会 select
 #   kmod-usb-storage / -extras / -uas、ntfs3-mount(→kmod-fs-ntfs3)、exfat、vfat
@@ -64,16 +73,10 @@ CONFIG_PACKAGE_luci-app-nikki=n
 # 设置主题为 Bootstrap
 CONFIG_PACKAGE_luci-theme-bootstrap=y
 
-# 关闭 Tailscale（tailscaled 是 26MB Go 静态二进制，压缩后仍占 rom/overlay 各约 10MB）
-CONFIG_PACKAGE_luci-app-tailscale=n
-CONFIG_PACKAGE_tailscale=n
-CONFIG_PACKAGE_luci-i18n-tailscale-zh-cn=n
-
-# 开启 WireGuard（内核态实现，整套不到 1MB；本机有公网 IPv6，可直连回家）
-CONFIG_PACKAGE_kmod-wireguard=y
-CONFIG_PACKAGE_wireguard-tools=y
-CONFIG_PACKAGE_luci-proto-wireguard=y
-CONFIG_PACKAGE_rpcd-mod-wireguard=y
+# Tailscale（保留）：本机 WAN 是运营商 CGNAT，无公网 IPv4，靠 DERP 中继才能打通
+CONFIG_PACKAGE_luci-app-tailscale=y
+CONFIG_PACKAGE_tailscale=y
+CONFIG_PACKAGE_luci-i18n-tailscale-zh-cn=y
 
 # 有线 NSS 完整加速（含 PPPoE 拨号加速）
 CONFIG_PACKAGE_kmod-qca-nss-ecm=y
