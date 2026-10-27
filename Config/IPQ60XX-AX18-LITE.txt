@@ -25,14 +25,14 @@ CONFIG_TARGET_DEVICE_qualcommax_ipq60xx_DEVICE_cmiot_ax18=y
 # CONFIG_PACKAGE_iw is not set
 # CONFIG_PACKAGE_wireless-regdb is not set
 
-# hostapd 的 11ac/11ax 特性开关。原本由 kmod-mac80211 的依赖隐式打开
-# （Config.in 里 default y if PACKAGE_kmod-mac80211），移除 mac80211 后自动变 n，
-# 但 wpad-openssl 仍被 target 的 DEFAULT_PACKAGES 编成 full 变体，而 full 变体的
-# hostapd.c 对 he_mu_edca 的引用没有条件编译保护，于是编译失败：
+# wpad / hostapd 整体不编。上轮完整编译就失败在这里：移除 kmod-mac80211 后，
+# hostapd 的 DRIVER_11AX_SUPPORT 失去来源变 n（Config.in 里它是没有 prompt 的 bool，
+# 只能被 select 赋值，写 .config 会被 make defconfig 丢弃），而 wpad-openssl 仍被
+# target 的 DEFAULT_PACKAGES 编成 full 变体，其 hostapd.c 对 he_mu_edca 的引用没有
+# 条件编译保护：
 #   src/ap/hostapd.c:5165: error: 'struct hostapd_config' has no member named 'he_mu_edca'
-# 这里显式打开，恢复到移除 mac80211 之前的已知可用状态（wpad 只编不装，不占镜像）。
-CONFIG_DRIVER_11AC_SUPPORT=y
-CONFIG_DRIVER_11AX_SUPPORT=y
+# 因此改由 Scripts/Handles.sh 把 wpad-openssl 从 DEFAULT_PACKAGES 中剔除。
+# 本机无 WiFi 驱动，hostapd 无实际用途；且 wpad 一直是 =m（只编不装），镜像内容不变。
 
 # 精简文件系统与 USB 存储（不挂 U 盘、不接 4G 模块）
 # automount 是整条链的源头，它的 DEPENDS 会 select

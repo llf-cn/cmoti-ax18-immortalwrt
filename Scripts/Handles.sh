@@ -77,8 +77,9 @@ if [ -n "$TMK" ]; then
 		-e 's/\bkmod-fs-f2fs\b//g' \
 		-e 's/\bkmod-usb-serial-qualcomm\b//g' \
 		-e 's/\bautomount\b//g' \
+		-e 's/\bwpad-openssl\b//g' \
 		"$TMK"
-	LEFT=$(grep -c "kmod-ath11k\|f2fs\|usb-serial-qualcomm\|automount" "$TMK" || true)
+	LEFT=$(grep -c "kmod-ath11k\|f2fs\|usb-serial-qualcomm\|automount\|wpad-openssl" "$TMK" || true)
 	echo "DEFAULT_PACKAGES trimmed, remaining refs: ${LEFT:-0}"
 	sed -n '/DEFAULT_PACKAGES +=/,/^$/p' "$TMK"
 else
