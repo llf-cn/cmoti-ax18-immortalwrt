@@ -23,8 +23,15 @@ CONFIG_PACKAGE_iw=n
 CONFIG_PACKAGE_wireless-regdb=n
 
 # 关闭 NSS WiFi Mesh 支持
+# ATH11K_NSS_SUPPORT 是上游 NSS 补丁栈的总开关（package/kernel/mac80211/ath.mk 里 default y，
+# 只依赖 TARGET_qualcommax）。它一为 y，就同时打开 CPTCFG_ATH11K_NSS_SUPPORT 与
+# CPTCFG_ATH11K_NSS_MESH_SUPPORT，并强制拉入 kmod-qca-nss-drv-wifi-meshmgr。
+# 而 ath11k 的 mesh offload 补丁会往 ath11k_ops 里挂 .config_mesh_offload_path，该成员在
+# mac80211.h 中受 CPTCFG_MAC80211_MESH 约束，与下面的 MAC80211_MESH=n 叠加即编译失败：
+#   ath11k/mac.c: error: 'const struct ieee80211_ops' has no member named 'config_mesh_offload_path'
+# 只关 PACKAGE_* 子项无效（会被重新 select 回来），必须显式关掉总开关。
+# CONFIG_ATH11K_NSS_SUPPORT is not set
 CONFIG_PACKAGE_kmod-qca-nss-drv-wifi-meshmgr=n
-CONFIG_PACKAGE_MAC80211_NSS_SUPPORT=n
 CONFIG_PACKAGE_MAC80211_MESH=n
 CONFIG_PACKAGE_ATH_DFS=n
 

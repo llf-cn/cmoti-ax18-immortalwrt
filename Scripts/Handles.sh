@@ -19,3 +19,21 @@ if [ -f "$NSS_PBUF" ]; then
 	sed -i 's/START=.*/START=86/g' "$NSS_PBUF"
 	echo "qca-nss-pbuf start order has been fixed!"
 fi
+
+# ---------------------------------------------------------------
+# 中和 ath11k NSS mesh offload 补丁里的条件编译守卫（兜底）
+#
+# 背景：patches/nss/ath11k/300-ath11k-nss-mesh-offload-support.patch 用
+#   #ifdef CPTCFG_ATH11K_NSS_MESH_SUPPORT 给 ath11k_ops 挂上 .config_mesh_offload_path，
+#   而该成员在 mac80211.h 里受 CPTCFG_MAC80211_MESH 约束。
+#   本配置关闭了 MAC80211_MESH，一旦 ATH11K_NSS_SUPPORT 被重新打开（上游默认 y）
+#   就会出现 "no member named 'config_mesh_offload_path'" 编译错误。
+#
+# 做法：只替换宏名、不改行数，补丁的 hunk 计数不受影响，仍可正常应用；
+#   改后的宏永远不会被定义，整段 NSS mesh 代码即被排除。
+# ---------------------------------------------------------------
+A11K_MESH_PATCH="./kernel/mac80211/patches/nss/ath11k/300-ath11k-nss-mesh-offload-support.patch"
+if [ -f "$A11K_MESH_PATCH" ]; then
+	sed -i 's/CPTCFG_ATH11K_NSS_MESH_SUPPORT/CPTCFG_ATH11K_NSS_MESH_SUPPORT_OFF/g' "$A11K_MESH_PATCH"
+	echo "ath11k nss mesh offload guard has been disabled!"
+fi
