@@ -26,6 +26,9 @@ CONFIG_TARGET_DEVICE_qualcommax_ipq60xx_DEVICE_cmiot_ax18=y
 # CONFIG_PACKAGE_wireless-regdb is not set
 
 # 精简文件系统与 USB 存储（不挂 U 盘、不接 4G 模块）
+# automount 是整条链的源头，它的 DEPENDS 会 select
+#   kmod-usb-storage / -extras / -uas、ntfs3-mount(→kmod-fs-ntfs3)、exfat、vfat
+# CONFIG_PACKAGE_automount is not set
 # CONFIG_PACKAGE_kmod-fs-f2fs is not set
 # CONFIG_PACKAGE_f2fs-tools is not set
 # CONFIG_PACKAGE_kmod-fs-ntfs3 is not set

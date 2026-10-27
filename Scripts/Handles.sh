@@ -43,15 +43,31 @@ fi
 #
 # 背景：target/linux/qualcommax/Makefile 的 DEFAULT_PACKAGES 会把
 #   kmod-ath11k / -ahb / -pci、kmod-fs-f2fs、f2fs-tools、
-#   kmod-usb-serial-qualcomm 当作默认包带入。仅在 Config/*.txt 里写
-#   "is not set" 无效 —— 实测最终 .config 里仍然是 =m（默认值覆盖了配置）。
-#   因此在这里直接从源头删除 token。
+#   kmod-usb-serial-qualcomm、automount 当作默认包带入。仅在 Config/*.txt
+#   里写 "is not set" 无效 —— 实测最终 .config 仍然是 =m/=y（默认值与
+#   DEPENDS 的 +pkg（等价于 select）会覆盖用户配置）。
+#   因此在这里直接从源头剔除 token。
 #
-# 注意：必须先删长名（kmod-ath11k-pci / -ahb）再删短名，否则短名的
+# automount 尤其关键：它的 DEPENDS 里带了
+#   +kmod-usb-storage +kmod-usb-storage-extras +kmod-usb-storage-uas
+#   +kmod-fs-ext4 +kmod-fs-exfat +kmod-fs-vfat +ntfs3-mount(→kmod-fs-ntfs3)
+# 整条 USB 存储 / NTFS3 依赖链都是从它拉进来的。
+#
+# 注意 1：本脚本的工作目录是 ./wrt/package/（workflow 里先 cd 再调用），
+#   所以 target 目录要用 ../target，不能用 ./target。
+# 注意 2：必须先删长名（kmod-ath11k-pci / -ahb）再删短名，否则短名的
 #   \b 边界会匹配到 "-" 之前，留下 "-pci" / "-ahb" 残片。
 # ---------------------------------------------------------------
-TMK="./target/linux/qualcommax/Makefile"
-if [ -f "$TMK" ]; then
+TMK=""
+for CAND in "../target/linux/qualcommax/Makefile" "./target/linux/qualcommax/Makefile"; do
+	if [ -f "$CAND" ]; then
+		TMK="$CAND"
+		break
+	fi
+done
+
+if [ -n "$TMK" ]; then
+	echo "Trimming DEFAULT_PACKAGES in: $TMK"
 	cp -f "$TMK" "$TMK.bak"
 	sed -i \
 		-e 's/\bkmod-ath11k-pci\b//g' \
@@ -60,9 +76,13 @@ if [ -f "$TMK" ]; then
 		-e 's/\bf2fs-tools\b//g' \
 		-e 's/\bkmod-fs-f2fs\b//g' \
 		-e 's/\bkmod-usb-serial-qualcomm\b//g' \
+		-e 's/\bautomount\b//g' \
 		"$TMK"
-	LEFT=$(grep -c "kmod-ath11k\|f2fs\|kmod-usb-serial-qualcomm" "$TMK" || true)
+	LEFT=$(grep -c "kmod-ath11k\|f2fs\|usb-serial-qualcomm\|automount" "$TMK" || true)
 	echo "DEFAULT_PACKAGES trimmed, remaining refs: ${LEFT:-0}"
-	grep -n "DEFAULT_PACKAGES +=" -A8 "$TMK" | head -12
+	sed -n '/DEFAULT_PACKAGES +=/,/^$/p' "$TMK"
+else
+	echo "WARNING: qualcommax target Makefile not found, DEFAULT_PACKAGES untouched!"
+	ls -d ../target/linux/*/ 2>/dev/null | head -5
 fi
 
