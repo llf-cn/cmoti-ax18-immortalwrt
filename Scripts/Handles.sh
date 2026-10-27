@@ -37,3 +37,32 @@ if [ -f "$A11K_MESH_PATCH" ]; then
 	sed -i 's/CPTCFG_ATH11K_NSS_MESH_SUPPORT/CPTCFG_ATH11K_NSS_MESH_SUPPORT_OFF/g' "$A11K_MESH_PATCH"
 	echo "ath11k nss mesh offload guard has been disabled!"
 fi
+
+# ---------------------------------------------------------------
+# 从 target DEFAULT_PACKAGES 中剔除不编译/不使用的默认包
+#
+# 背景：target/linux/qualcommax/Makefile 的 DEFAULT_PACKAGES 会把
+#   kmod-ath11k / -ahb / -pci、kmod-fs-f2fs、f2fs-tools、
+#   kmod-usb-serial-qualcomm 当作默认包带入。仅在 Config/*.txt 里写
+#   "is not set" 无效 —— 实测最终 .config 里仍然是 =m（默认值覆盖了配置）。
+#   因此在这里直接从源头删除 token。
+#
+# 注意：必须先删长名（kmod-ath11k-pci / -ahb）再删短名，否则短名的
+#   \b 边界会匹配到 "-" 之前，留下 "-pci" / "-ahb" 残片。
+# ---------------------------------------------------------------
+TMK="./target/linux/qualcommax/Makefile"
+if [ -f "$TMK" ]; then
+	cp -f "$TMK" "$TMK.bak"
+	sed -i \
+		-e 's/\bkmod-ath11k-pci\b//g' \
+		-e 's/\bkmod-ath11k-ahb\b//g' \
+		-e 's/\bkmod-ath11k\b//g' \
+		-e 's/\bf2fs-tools\b//g' \
+		-e 's/\bkmod-fs-f2fs\b//g' \
+		-e 's/\bkmod-usb-serial-qualcomm\b//g' \
+		"$TMK"
+	LEFT=$(grep -c "kmod-ath11k\|f2fs\|kmod-usb-serial-qualcomm" "$TMK" || true)
+	echo "DEFAULT_PACKAGES trimmed, remaining refs: ${LEFT:-0}"
+	grep -n "DEFAULT_PACKAGES +=" -A8 "$TMK" | head -12
+fi
+

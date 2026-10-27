@@ -47,25 +47,24 @@ UPDATE_PACKAGE() {
 	fi
 }
 
-UPDATE_PACKAGE "momo" "nikkinikki-org/OpenWrt-momo" "main"
-UPDATE_PACKAGE "nikki" "nikkinikki-org/OpenWrt-nikki" "main"
 UPDATE_PACKAGE "openclash" "vernesong/OpenClash" "dev" "pkg"
-UPDATE_PACKAGE "homeproxy" "immortalwrt/homeproxy" "master"
-UPDATE_PACKAGE "passwall" "Openwrt-Passwall/openwrt-passwall" "main" "pkg"
-UPDATE_PACKAGE "passwall2" "Openwrt-Passwall/openwrt-passwall2" "main" "pkg"
 
-UPDATE_PACKAGE "luci-app-tailscale" "asvow/luci-app-tailscale" "main"
-# 修复 luci-app-tailscale 与 tailscale 本体的文件冲突
-rm -f ./luci-app-tailscale/root/etc/config/tailscale
-rm -f ./luci-app-tailscale/root/etc/init.d/tailscale
-
-UPDATE_PACKAGE "ddns-go" "sirpdboy/luci-app-ddns-go" "main"
-UPDATE_PACKAGE "diskman" "lisaac/luci-app-diskman" "master"
-UPDATE_PACKAGE "easytier" "EasyTier/luci-app-easytier" "main"
-
-UPDATE_PACKAGE "mosdns" "sbwml/luci-app-mosdns" "v5" "" "v2dat"
-UPDATE_PACKAGE "openlist2" "sbwml/luci-app-openlist2" "main"
-UPDATE_PACKAGE "partexp" "sirpdboy/luci-app-partexp" "main"
-UPDATE_PACKAGE "qbittorrent" "sbwml/luci-app-qbittorrent" "master" "" "qt6base qt6tools rblibtorrent"
-UPDATE_PACKAGE "quickfile" "sbwml/luci-app-quickfile" "main"
-UPDATE_PACKAGE "vnt" "lmq8267/luci-app-vnt" "main"
+# 以下插件当前配置均未启用（CONFIG_PACKAGE_*=n），克隆它们只是白费构建时间，
+# 其中 vnt 的仓库已删除，每次构建还会刷一条 "Failed to clone" 警告。故整段移除。
+# 需要时重新加回来并同时在 Config/*.txt 里打开对应 CONFIG_PACKAGE_* 即可。
+#
+# UPDATE_PACKAGE "momo"        "nikkinikki-org/OpenWrt-momo"        "main"
+# UPDATE_PACKAGE "nikki"       "nikkinikki-org/OpenWrt-nikki"       "main"
+# UPDATE_PACKAGE "homeproxy"   "immortalwrt/homeproxy"              "master"
+# UPDATE_PACKAGE "passwall"    "Openwrt-Passwall/openwrt-passwall"  "main" "pkg"
+# UPDATE_PACKAGE "passwall2"   "Openwrt-Passwall/openwrt-passwall2" "main" "pkg"
+# UPDATE_PACKAGE "luci-app-tailscale" "asvow/luci-app-tailscale"    "main"
+# UPDATE_PACKAGE "ddns-go"     "sirpdboy/luci-app-ddns-go"          "main"
+# UPDATE_PACKAGE "diskman"     "lisaac/luci-app-diskman"            "master"
+# UPDATE_PACKAGE "easytier"    "EasyTier/luci-app-easytier"         "main"
+# UPDATE_PACKAGE "mosdns"      "sbwml/luci-app-mosdns"              "v5"   "" "v2dat"
+# UPDATE_PACKAGE "openlist2"   "sbwml/luci-app-openlist2"           "main"
+# UPDATE_PACKAGE "partexp"     "sirpdboy/luci-app-partexp"          "main"
+# UPDATE_PACKAGE "qbittorrent" "sbwml/luci-app-qbittorrent"         "master" "" "qt6base qt6tools rblibtorrent"
+# UPDATE_PACKAGE "quickfile"   "sbwml/luci-app-quickfile"           "main"
+# UPDATE_PACKAGE "vnt"         "lmq8267/luci-app-vnt"               "main"
