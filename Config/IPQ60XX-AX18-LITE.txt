@@ -63,10 +63,23 @@ CONFIG_PACKAGE_ATH_DFS=n
 
 # honk：唯一的透明代理引擎（OpenClash / Tailscale 均已移除）
 CONFIG_PACKAGE_honk=y
-# 内核没编 netkit，honk 建 dae0 时会回退到 veth
+# LuCI 管理界面 + doona 面板静态资源（装在 /etc/honk/doona/，故核心用 native-api 变体即可）
+CONFIG_PACKAGE_luci-app-honk=y
+CONFIG_PACKAGE_luci-i18n-honk-zh-cn=y
+
+# 内核没编 netkit，honk 建 dae0/dae0peer 时会回退到 veth
 CONFIG_PACKAGE_kmod-veth=y
 # 默认开启的 NFQUEUE(320) 首包保持需要 nft_queue + nfnetlink_queue
 CONFIG_PACKAGE_kmod-nft-queue=y
+# honk 的 TC 过滤器走 TCX，但 sch_ingress/cls_bpf（kmod-sched-bpf）是 honk 包声明的前置
+CONFIG_PACKAGE_kmod-sched-bpf=y
+# honk 依赖 ip-full 而不是 busybox 的 ip（netns / link 操作需要完整 netlink 支持）
+CONFIG_PACKAGE_ip-full=y
+
+# geo 规则集打进 rom，避免首次启动时联网下载（这一步往往还没代理可用，会死锁）
+# init 脚本通过 DAE_LOCATION_ASSET=/usr/share/v2ray 指到这里
+CONFIG_PACKAGE_v2ray-geosite=y
+CONFIG_PACKAGE_v2ray-geoip=y
 
 # honk 启动时会加载原始 BTF（CO-RE 重定位 + 进程名/接收追踪偏移），
 # 源码里依次找 $HONK_VMLINUX_BTF、/sys/kernel/btf/vmlinux、/usr/lib/debug/boot/vmlinux。

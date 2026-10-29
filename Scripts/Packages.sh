@@ -56,14 +56,31 @@ UPDATE_PACKAGE() {
 # rm -f ./luci-app-tailscale/root/etc/config/tailscale
 # rm -f ./luci-app-tailscale/root/etc/init.d/tailscale
 
-# honk：官方只发预编译二进制，包配方放在本仓库 Package/honk/ 下，这里拷进 package 树
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-if [ -d "$REPO_ROOT/Package/honk" ]; then
-	rm -rf ./honk
-	cp -rf "$REPO_ROOT/Package/honk" ./honk
-	echo "Copied custom package: honk"
+# honk + luci-app-honk
+#
+# 上游 daeuniverse/honk 只发预编译二进制，没有 OpenWrt 配方；这里用 QiuSimons 维护的
+# 包集合（含 LuCI 界面与 doona 面板静态资源），仓库根下就是 honk/ 与 luci-app-honk/
+# 两个包目录，clone 后分别拷到 package 树根。
+#
+# 相比自己写的最小包，这份配方补齐了这些点：
+#   - 变体用 -stock-native-api（11.2 MB）而非 -stock-full（13.6 MB）：doona 前端由
+#     luci-app-honk 装在 /etc/honk/doona/，内核只需 native API，不必内嵌一份
+#   - 依赖里有 kmod-sched-bpf、ip-full、v2ray-geoip/geosite
+#   - init 脚本用 procd netdev 预建 dae0/dae0peer 这对 veth，并设
+#     DAE_LOCATION_ASSET=/usr/share/v2ray，geo 数据不用运行时联网下载
+#   - 配置拆成 config.d/{node,route,dns,api}.dae，LuCI 按模块编辑
+echo ""
+echo "Cloning: https://github.com/QiuSimons/luci-app-honk.git (branch: master)"
+if git clone --depth=1 --single-branch --branch master \
+	https://github.com/QiuSimons/luci-app-honk.git honk-src; then
+	rm -rf ./honk ./luci-app-honk
+	cp -rf ./honk-src/honk ./honk
+	cp -rf ./honk-src/luci-app-honk ./luci-app-honk
+	rm -rf ./honk-src
+	echo "Copied packages: honk, luci-app-honk"
 else
-	echo "WARNING: $REPO_ROOT/Package/honk not found, honk will NOT be built!"
+	rm -rf ./honk-src
+	echo "WARNING: Failed to clone luci-app-honk, honk will NOT be built!"
 fi
 
 # 以下插件当前配置均未启用（CONFIG_PACKAGE_*=n），克隆它们只是白费构建时间，
