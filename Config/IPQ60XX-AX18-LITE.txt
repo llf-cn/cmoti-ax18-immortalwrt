@@ -61,8 +61,22 @@ CONFIG_PACKAGE_kmod-qca-nss-drv-wifi-meshmgr=n
 CONFIG_PACKAGE_MAC80211_MESH=n
 CONFIG_PACKAGE_ATH_DFS=n
 
-# OpenClash
-CONFIG_PACKAGE_luci-app-openclash=y
+# honk：唯一的透明代理引擎（OpenClash / Tailscale 均已移除）
+CONFIG_PACKAGE_honk=y
+# 内核没编 netkit，honk 建 dae0 时会回退到 veth
+CONFIG_PACKAGE_kmod-veth=y
+# 默认开启的 NFQUEUE(320) 首包保持需要 nft_queue + nfnetlink_queue
+CONFIG_PACKAGE_kmod-nft-queue=y
+
+# honk 启动时会加载原始 BTF（CO-RE 重定位 + 进程名/接收追踪偏移），
+# 源码里依次找 $HONK_VMLINUX_BTF、/sys/kernel/btf/vmlinux、/usr/lib/debug/boot/vmlinux。
+# 本 target 默认 KERNEL_DEBUG_INFO_REDUCED=y，而 BTF 与它互斥，
+# 所以下面三个符号必须一起写，缺一个都会被 make defconfig 丢掉。
+CONFIG_KERNEL_DEBUG_INFO=y
+# CONFIG_KERNEL_DEBUG_INFO_REDUCED is not set
+CONFIG_KERNEL_DEBUG_INFO_BTF=y
+
+# OpenClash 已被 honk 取代：两者争抢 TC hook、NFQUEUE 320 和根 cgroup 的 sock_ops 槽位
 
 # HomeProxy
 CONFIG_PACKAGE_luci-app-homeproxy=n
@@ -73,10 +87,9 @@ CONFIG_PACKAGE_luci-app-nikki=n
 # 设置主题为 Bootstrap
 CONFIG_PACKAGE_luci-theme-bootstrap=y
 
-# Tailscale（保留）：本机 WAN 是运营商 CGNAT，无公网 IPv4，靠 DERP 中继才能打通
-CONFIG_PACKAGE_luci-app-tailscale=y
-CONFIG_PACKAGE_tailscale=y
-CONFIG_PACKAGE_luci-i18n-tailscale-zh-cn=y
+# Tailscale 已移除（honk 接管代理；需要时再单独加回来）
+# CONFIG_PACKAGE_luci-app-tailscale is not set
+# CONFIG_PACKAGE_tailscale is not set
 
 # 有线 NSS 完整加速（含 PPPoE 拨号加速）
 CONFIG_PACKAGE_kmod-qca-nss-ecm=y

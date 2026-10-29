@@ -47,12 +47,24 @@ UPDATE_PACKAGE() {
 	fi
 }
 
-UPDATE_PACKAGE "openclash" "vernesong/OpenClash" "dev" "pkg"
+# OpenClash 与 Tailscale 均已移除：honk 接管透明代理，且在 TC hook / NFQUEUE 320 /
+# 根 cgroup 的 sock_ops 槽位上互斥，不能与 OpenClash 共存。
+#
+# UPDATE_PACKAGE "openclash" "vernesong/OpenClash" "dev" "pkg"
+#
+# UPDATE_PACKAGE "luci-app-tailscale" "asvow/luci-app-tailscale"    "main"
+# rm -f ./luci-app-tailscale/root/etc/config/tailscale
+# rm -f ./luci-app-tailscale/root/etc/init.d/tailscale
 
-UPDATE_PACKAGE "luci-app-tailscale" "asvow/luci-app-tailscale"    "main"
-# 修复 luci-app-tailscale 与 feeds 里 tailscale 本体的文件冲突
-rm -f ./luci-app-tailscale/root/etc/config/tailscale
-rm -f ./luci-app-tailscale/root/etc/init.d/tailscale
+# honk：官方只发预编译二进制，包配方放在本仓库 Package/honk/ 下，这里拷进 package 树
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+if [ -d "$REPO_ROOT/Package/honk" ]; then
+	rm -rf ./honk
+	cp -rf "$REPO_ROOT/Package/honk" ./honk
+	echo "Copied custom package: honk"
+else
+	echo "WARNING: $REPO_ROOT/Package/honk not found, honk will NOT be built!"
+fi
 
 # 以下插件当前配置均未启用（CONFIG_PACKAGE_*=n），克隆它们只是白费构建时间，
 # 其中 vnt 的仓库已删除，每次构建还会刷一条 "Failed to clone" 警告。故整段移除。
